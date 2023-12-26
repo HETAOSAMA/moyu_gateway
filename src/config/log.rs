@@ -28,7 +28,7 @@ pub fn init_log() {
         }
     }
 
-    cfg = cfg.chan_len(CONTEXT.config.log_chan_len);
+    cfg = cfg.chan_len(CONTEXT.config.log_chan_len).console();
     let _ = fast_log::init(cfg);
 }
 

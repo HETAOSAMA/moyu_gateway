@@ -1,9 +1,11 @@
 mod redis_service;
+mod sys_services_service;
 
 use once_cell::sync::Lazy;
 use rbatis::RBatis;
 use rbdc_mysql::MysqlDriver;
 use crate::config::config::ApplicationConfig;
+use crate::service::sys_services_service::SysServiceService;
 
 pub static CONTEXT: Lazy<ServiceContext> = Lazy::new(|| ServiceContext::default());
 
@@ -17,6 +19,7 @@ macro_rules! pool {
 pub struct ServiceContext {
     pub config: ApplicationConfig,
     pub rb: RBatis,
+    pub sys_service_service: SysServiceService,
 }
 
 impl ServiceContext {
@@ -45,6 +48,7 @@ impl Default for ServiceContext {
         ServiceContext {
             rb: RBatis::new(),
             config,
+            sys_service_service: SysServiceService{},
         }
     }
 }

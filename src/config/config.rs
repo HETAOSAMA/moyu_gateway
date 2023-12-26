@@ -1,5 +1,6 @@
 #[derive(Debug, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ApplicationConfig {
+    pub debug: bool,
     pub server_name: String,
     pub server_url: String,
     pub redis_url: String,
@@ -18,7 +19,12 @@ impl Default for ApplicationConfig {
     fn default() -> Self {
         let js_data = include_str!("../../application.json5");
         let mut result: ApplicationConfig = json5::from_str(js_data).expect("json5 parse error");
-        log::info!("config: {:?}", result);
+        if result.debug {
+            println!("[moyu_gateway] load config:{:?}", result);
+            println!("[muyu_gateway] ///////////////////// Start On Debug Mode ////////////////////////////");
+        } else {
+            println!("[moyu_gateway] ///////////////////// Start On Release Mode ////////////////////////////");
+        }
         result
     }
 }

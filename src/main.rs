@@ -1,4 +1,6 @@
 use actix_web::{App, HttpResponse, HttpServer, Responder, web};
+use actix_web::middleware::Logger;
+use moyu_gateway::controller::sys_services_controller::sys_service_config;
 use moyu_gateway::service::CONTEXT;
 
 async fn index() -> impl Responder {
@@ -11,7 +13,8 @@ async fn index() -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     //log
-    moyu_gateway::config::log::init_log();
+    let a = moyu_gateway::config::log::init_log();
+
     //database
     CONTEXT.init_database().await;
     // table::sync_tables(&CONTEXT.rb).await;
@@ -19,6 +22,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .route("/", web::get().to(index))
+            .configure(sys_service_config)
     })
         .bind(&CONTEXT.config.server_url)?
         .run()
