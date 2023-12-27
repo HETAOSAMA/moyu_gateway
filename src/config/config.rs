@@ -21,7 +21,7 @@ impl Default for ApplicationConfig {
         let mut result: ApplicationConfig = json5::from_str(js_data).expect("json5 parse error");
         if result.debug {
             println!("[moyu_gateway] load config:{:?}", result);
-            println!("[muyu_gateway] ///////////////////// Start On Debug Mode ////////////////////////////");
+            println!("[moyu_gateway] ///////////////////// Start On Debug Mode ////////////////////////////");
         } else {
             println!("[moyu_gateway] ///////////////////// Start On Release Mode ////////////////////////////");
         }

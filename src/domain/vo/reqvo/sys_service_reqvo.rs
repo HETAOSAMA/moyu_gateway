@@ -9,7 +9,7 @@ pub struct AddServiceReqVO {
     pub url: Option<String>,
     // 对服务的描述，可选字段，用于提供更多信息。
     pub description: Option<String>,
-    // 服务的协议，例如 HTTP、HTTPS、TCP 等。
+    // 服务的协议，例如 HTTP、HTTPS。
     pub protocol: Option<String>,
     // 服务的端口号可选
     pub port: Option<i32>,

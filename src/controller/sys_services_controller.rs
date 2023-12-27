@@ -47,3 +47,10 @@ async fn update_service(arg: web::Json<UpdateServiceReqVO>) -> impl Responder{
     let vo = CONTEXT.sys_service_service.update_service(sys_service).await;
     return RespVO::from_result(&vo).resp_json()
 }
+
+#[post("/delete_service_by_ids")]
+async fn delete_service_by_ids(arg: web::Json<Vec<String>>) -> impl Responder{
+    let vo = CONTEXT.sys_service_service.delete_service_by_ids(arg.to_owned()).await;
+    return RespVO::from_result(&vo).resp_json()
+}
+
