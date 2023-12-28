@@ -6,10 +6,31 @@
             ${item}
         </foreach>
     </delete>
-    <delete id="select_by_ids">
-        `delete from sys_services where id in`
+
+    <select id="select_by_ids">
+        `select * from sys_services where id in`
         <foreach collection="arg" index="key" item="item" open="(" close=")" separator=",">
             ${item}
         </foreach>
-    </delete>
+    </select>
+
+    <select id="select_by_page">
+        <if test="do_count == true">
+            ` select count(1) from sys_services `
+        </if>
+        <if test="do_count == false">
+            ` select * from sys_services `
+        </if>
+        <where>
+            <if test="server_name != ''">
+                `and server_name like concat('%',#{server_name},'%')`
+            </if>
+            <if test="is_active != Null">
+                `and is_active = #{is_active}`
+            </if>
+        </where>
+        <if test="do_count == false">
+            ` limit ${page_no},${page_size}`
+        </if>
+    </select>
 </mapper>

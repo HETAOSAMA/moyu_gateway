@@ -15,4 +15,4 @@ pub struct SysServices {
     pub updated_at: Option<DateTime>,
 }
 crud!(SysServices{});
-impl_select!(SysServices{select_by_id(id:&String) -> Option => "`where id = #{id} limit 1`"});
+impl_select!(SysServices{select_by_id(id:&String) -> Option => "`where id = #{id}`"});

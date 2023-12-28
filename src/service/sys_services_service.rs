@@ -1,12 +1,14 @@
-use rbatis::{html_sql, RBatis};
+use rbatis::{html_sql, htmlsql_select_page, RBatis};
 use rbatis::rbdc::DateTime;
 use rbatis::rbdc::db::ExecResult;
 use rbatis::snowflake::new_snowflake_id;
+use rbatis::sql::{Page, PageRequest};
 use rbs::Value;
 use rbs::Value::Null;
 use serde_json::from_str;
 use url::{Url};
 use crate::domain::table::sys_services::SysServices;
+use crate::domain::vo::reqvo::sys_service_reqvo::SelectServiceByPageReqVO;
 use crate::pool;
 use crate::error::Result;
 use crate::service::redis_service::{del, get, set};
@@ -20,6 +22,7 @@ pub async fn delete_by_ids(rb: &RBatis,arg: Vec<String>) -> ExecResult {
 pub async fn select_by_ids(rb: &RBatis,arg: Vec<String>) -> Vec<SysServices> {
     impled!()
 }
+htmlsql_select_page!(select_by_page(server_name: &str, is_active: &i32) -> SysServices => "src/domain/table/sys_services.html");
 
 pub struct SysServiceService {}
 
@@ -38,7 +41,7 @@ impl SysServiceService {
         let mut parsed_url = Url::parse(&arg_url_with_scheme);
         match parsed_url {
             Ok(_) => {
-                arg.url = Some(parsed_url.unwrap().to_string());
+                arg.url = Option::from(parsed_url.unwrap().host_str().unwrap().to_string());
             }
             Err(_) => {
                 return Err(Error::from("url 解析失败"));
@@ -76,7 +79,7 @@ impl SysServiceService {
         let data = SysServices::select_by_id(pool!(), &arg.id.clone().unwrap()).await?.unwrap();
         match serde_json::to_string(&data) {
             Ok(json_string) => {
-                let key = get_redis_key(arg.clone());
+                let key = get_redis_key(data.clone());
                 if key.is_null() {
                     return Err(Error::from("redis key 生成失败"));
                 }
@@ -92,12 +95,14 @@ impl SysServiceService {
                             }
                         }
                         Err(err) => {
+                            log::error!("json反序列化失败:{}", err.to_string());
                             return Err(Error::from("反序列化失败"));
                         }
                     }
                 }
             }
             Err(e) => {
+                log::error!("json序列化失败:{}", e.to_string());
                 return Err(Error::from(e.to_string()));
             }
         }
@@ -110,11 +115,20 @@ impl SysServiceService {
         if !datas.is_empty(){
             for data in datas {
                 let redis_key = get_redis_key(data).to_string();
+                println!("redis_key:{}",redis_key);
                 del(redis_key);
             }
         }
         let a = delete_by_ids(pool!(), arg).await?.rows_affected;
         Ok(a)
+    }
+    pub async fn select_service_by_page(&self, arg: &SelectServiceByPageReqVO) -> Result<Page<SysServices>> {
+        let a = select_by_page(pool!(),
+                               &PageRequest::new(arg.page_no.clone().unwrap_or_default(), arg.page_size.clone().unwrap_or_default()),
+                               &arg.server_name.as_deref().unwrap_or_default(),
+                               &arg.is_active.unwrap_or_default()).await?;
+        let page = Page::<SysServices>::from(a);
+        return Ok(page);
     }
 }
 

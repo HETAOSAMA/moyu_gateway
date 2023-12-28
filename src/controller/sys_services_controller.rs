@@ -1,6 +1,6 @@
 use actix_web::{post, Responder, web};
 use crate::domain::table::sys_services::SysServices;
-use crate::domain::vo::reqvo::sys_service_reqvo::{AddServiceReqVO, UpdateServiceReqVO};
+use crate::domain::vo::reqvo::sys_service_reqvo::{AddServiceReqVO, DeleteServiceReqVO, SelectServiceByPageReqVO, UpdateServiceReqVO};
 use crate::domain::vo::respvo::RespVO;
 use crate::service::CONTEXT;
 
@@ -9,6 +9,8 @@ pub fn sys_service_config(cfg: &mut web::ServiceConfig) {
         web::scope("/sys_service")
             .service(add_service)
             .service(update_service)
+            .service(delete_service_by_ids)
+            .service(select_service_by_page)
     );
 }
 
@@ -49,8 +51,14 @@ async fn update_service(arg: web::Json<UpdateServiceReqVO>) -> impl Responder{
 }
 
 #[post("/delete_service_by_ids")]
-async fn delete_service_by_ids(arg: web::Json<Vec<String>>) -> impl Responder{
-    let vo = CONTEXT.sys_service_service.delete_service_by_ids(arg.to_owned()).await;
+async fn delete_service_by_ids(arg: web::Json<DeleteServiceReqVO>) -> impl Responder{
+    let vo = CONTEXT.sys_service_service.delete_service_by_ids(arg.ids.clone().unwrap()).await;
+    return RespVO::from_result(&vo).resp_json()
+}
+
+#[post("/select_service_by_page")]
+async fn select_service_by_page(arg: web::Json<SelectServiceByPageReqVO>) -> impl Responder{
+    let vo = CONTEXT.sys_service_service.select_service_by_page(&arg.0).await;
     return RespVO::from_result(&vo).resp_json()
 }
 

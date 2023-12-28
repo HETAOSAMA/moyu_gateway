@@ -1,5 +1,4 @@
 use actix_web::{App, HttpResponse, HttpServer, Responder, web};
-use actix_web::middleware::Logger;
 use moyu_gateway::controller::sys_services_controller::sys_service_config;
 use moyu_gateway::service::CONTEXT;
 
@@ -13,7 +12,7 @@ async fn index() -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     //log
-    let a = moyu_gateway::config::log::init_log();
+    moyu_gateway::config::log::init_log();
 
     //database
     CONTEXT.init_database().await;

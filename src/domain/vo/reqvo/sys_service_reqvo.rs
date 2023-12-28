@@ -31,3 +31,15 @@ pub struct UpdateServiceReqVO {
     pub is_active: Option<i32>,
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct DeleteServiceReqVO {
+    pub ids: Option<Vec<String>>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct SelectServiceByPageReqVO {
+    pub server_name: Option<String>,
+    pub is_active: Option<i32>,
+    pub page_no: Option<u64>,
+    pub page_size: Option<u64>,
+}
