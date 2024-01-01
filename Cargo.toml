@@ -16,9 +16,9 @@ serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
 log = "0.4"
 fast_log = {version = "1.6", features = ["mmap"]}
-#redis = { version = "0.24.0", features = ["tokio-comp"] }
+redis = { version = "0.24.0", features = ["tokio-comp"] }
 #实在是不知道这个redis怎么异步，只能用同步的了
-redis = "0.24.0"
+#redis = "0.24.0"
 
 #web server
 actix-web = { version = "4", default-features = false, features = ["macros"] }

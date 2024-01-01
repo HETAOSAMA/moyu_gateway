@@ -1,4 +1,4 @@
-#[derive(Debug, PartialEq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, PartialEq, serde::Serialize, serde::Deserialize,Clone)]
 pub struct ApplicationConfig {
     pub debug: bool,
     pub server_name: String,

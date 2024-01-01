@@ -1,70 +1,101 @@
-use lazy_static::lazy_static;
+use futures_util::future::BoxFuture;
 use log::{error, info};
-use redis::{Client, Commands, Connection};
-use crate::config::config::ApplicationConfig;
+use crate::error::{Error, Result};
+use redis::aio::Connection;
+use crate::get_rd;
+use std::string::String;
+use redis::{AsyncCommands, Client, RedisResult};
 
-lazy_static! {
-    static ref REDIS_CLIENT: Client = init_redis_client();
+// 初始化 Redis 客户端的 Lazy 静态变量
+pub struct RedisService {
+    pub client: Client,
+}
+impl RedisService {
+    pub fn new(url: String) -> Self {
+        info!(
+            "redis init ({})...",
+            url
+        );
+        let client = Client::open(url).unwrap();
+        info!(
+            "redis pool init success!"
+        );
+        RedisService { client }
+    }
+
+    pub async fn get_conn(&self) -> Result<Connection> {
+        let conn = self.client.get_async_connection().await;
+        if conn.is_err() {
+            let err = format!("RedisService connect fail:{}", conn.err().unwrap());
+            error!("{}", err);
+            return Err(crate::error::Error::from(err));
+        }
+
+        Ok(conn.unwrap())
+    }
 }
 
-fn get_redis_client<'a>() -> &'a Client {
-    &REDIS_CLIENT
-}
 
-fn init_redis_client() -> Client {
-    let redis_url = ApplicationConfig::default().redis_url;
-    let cluster = &redis_url;
-    info!("redis cluster: {:?}", cluster);
-    Client::open(cluster.to_string()).unwrap()
-}
 
-fn get_redis_conn() -> Connection {
-    let client = get_redis_client();
-    let connection = client.get_connection().unwrap();
-    connection
-}
-
-pub fn set(key: String, value: String) -> bool {
-    get_redis_conn()
-        .set::<String, String, bool>(key, value)
-        .unwrap_or_else(|err| {
+pub async fn set(key: String, value: String) -> BoxFuture<'static,Result<bool>> {
+    Box::pin(async move {
+        let mut connection = get_rd!();
+        let result = connection.set(key, value);
+        result.await.map_err(|err| {
             error!("Failed to set value in Redis: {:?}", err);
-            false
+            Error::from(err.to_string())
         })
+    })
 }
 
-pub fn set_nx(key: String, value: String) -> bool {
-    get_redis_conn()
-        .set_nx::<String, String, bool>(key, value)
-        .unwrap_or_else(|err| {
+pub async fn set_nx(key: String, value: String) -> BoxFuture<'static,Result<bool>> {
+    Box::pin(async move {
+        let mut connection = get_rd!();
+        let result = connection.set_nx(key, value);
+        result.await.map_err(|err| {
             error!("Failed to set_nx value in Redis: {:?}", err);
-            false
+            Error::from(err.to_string())
         })
+    })
+
 }
 
-pub fn set_ex(key: String, value: String, seconds: i32) -> bool {
-    get_redis_conn()
-        .set_ex::<String, String, bool>(key, value, seconds as usize as u64)
-        .unwrap_or_else(|err| {
+pub async fn set_ex(key: String, value: String, seconds: u64) -> BoxFuture<'static,Result<bool>> {
+    Box::pin(async move {
+        let mut connection = get_rd!();
+        let result = connection.set_ex(key, value,seconds);
+        result.await.map_err(|err| {
             error!("Failed to set_ex value in Redis: {:?}", err);
-            false
+            Error::from(err.to_string())
         })
+    })
 }
 
-pub fn get(key: String) -> String {
-    get_redis_conn()
-        .get::<String, String>(key)
-        .unwrap_or_else(|err| {
-            error!("Failed to get value from Redis: {:?}", err);
-            "".to_string()
-        })
+pub async fn get(key: String) -> BoxFuture<'static,Result<String>> {
+    Box::pin(async move {
+        let result: RedisResult<Option<String>> =
+            redis::cmd("GET").arg(&[&key]).query_async(get_rd!()).await;
+        return match result {
+            Ok(v) => Ok(v.unwrap_or_default()),
+            Err(e) => Err(Error::from(format!(
+                "RedisService get_string({}) fail:{}",
+                key,
+                e.to_string()
+            ))),
+        };
+
+
+
+    })
 }
 
-pub fn del(key: String) -> bool {
-    get_redis_conn()
-        .del::<String, bool>(key)
-        .unwrap_or_else(|err| {
+pub async fn del(key: String) -> BoxFuture<'static,Result<String>> {
+    Box::pin(async move {
+        let mut connection = get_rd!();
+        let result = connection.del(key);
+        result.await.map_err(|err| {
             error!("Failed to del value from Redis: {:?}", err);
-            false
+            Error::from(err.to_string())
         })
+    })
 }

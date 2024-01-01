@@ -21,8 +21,11 @@ pub struct AddServiceReqVO {
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct UpdateServiceReqVO {
+    // 必填
     pub id: Option<String>,
+    // 必填
     pub server_name: Option<String>,
+    // 必填
     pub url: Option<String>,
     pub description: Option<String>,
     pub protocol: Option<String>,
@@ -39,6 +42,7 @@ pub struct DeleteServiceReqVO {
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct SelectServiceByPageReqVO {
     pub server_name: Option<String>,
+    // 必填服务是否激活，1-启用，2-禁用，0-全部
     pub is_active: Option<i32>,
     pub page_no: Option<u64>,
     pub page_size: Option<u64>,

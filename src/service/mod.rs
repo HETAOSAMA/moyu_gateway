@@ -1,10 +1,12 @@
-mod redis_service;
+pub mod redis_service;
 mod sys_services_service;
 
 use once_cell::sync::Lazy;
 use rbatis::RBatis;
 use rbdc_mysql::MysqlDriver;
+use redis::{Client, ConnectionLike};
 use crate::config::config::ApplicationConfig;
+use crate::service::redis_service::RedisService;
 use crate::service::sys_services_service::SysServiceService;
 
 pub static CONTEXT: Lazy<ServiceContext> = Lazy::new(|| ServiceContext::default());
@@ -15,11 +17,19 @@ macro_rules! pool {
         &$crate::service::CONTEXT.rb
     };
 }
+#[macro_export]
+macro_rules! get_rd {
+    () => {
+        &mut $crate::service::CONTEXT.redis_service.get_conn().await.unwrap()
+    };
+}
+
 
 pub struct ServiceContext {
     pub config: ApplicationConfig,
     pub rb: RBatis,
     pub sys_service_service: SysServiceService,
+    pub redis_service: RedisService,
 }
 
 impl ServiceContext {
@@ -47,8 +57,9 @@ impl Default for ServiceContext {
         let config = ApplicationConfig::default();
         ServiceContext {
             rb: RBatis::new(),
-            config,
+            config: config.clone(),
             sys_service_service: SysServiceService{},
+            redis_service: RedisService::new(config.redis_url)
         }
     }
 }
