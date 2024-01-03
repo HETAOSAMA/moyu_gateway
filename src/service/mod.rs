@@ -4,7 +4,7 @@ mod sys_services_service;
 use once_cell::sync::Lazy;
 use rbatis::RBatis;
 use rbdc_mysql::MysqlDriver;
-use redis::{Client, ConnectionLike};
+use redis::{ConnectionLike};
 use crate::config::config::ApplicationConfig;
 use crate::service::redis_service::RedisService;
 use crate::service::sys_services_service::SysServiceService;

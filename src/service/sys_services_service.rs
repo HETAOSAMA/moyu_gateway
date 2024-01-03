@@ -1,8 +1,7 @@
-use rbatis::{html_sql, htmlsql_select_page, RBatis};
+use rbatis::{html_sql, htmlsql_select_page, Page, PageRequest, RBatis};
 use rbatis::rbdc::DateTime;
 use rbatis::rbdc::db::ExecResult;
 use rbatis::snowflake::new_snowflake_id;
-use rbatis::sql::{Page, PageRequest};
 
 use serde_json::from_str;
 use url::{Url};

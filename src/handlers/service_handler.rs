@@ -1,8 +1,7 @@
-use actix_web::{HttpRequest, HttpResponse, Responder, web};
+use actix_web::{HttpRequest, HttpResponse, web};
 use futures_util::StreamExt;
 use serde_json::from_str;
 use url::{ParseError, Url};
-use crate::domain::table::sys_services;
 use crate::domain::table::sys_services::SysServices;
 use crate::service::redis_service::get;
 

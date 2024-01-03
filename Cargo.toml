@@ -8,14 +8,14 @@ authors = ["bv47"]
 #[target.x86_64-apple-darwin.dependencies]
 [dependencies]
 #rbatis deps
-rbs = { version = "4.5"}
-rbatis = { version = "4.5", features = ["debug_mode"]}
-rbdc-mysql={version="4.5"}
+rbs = { version = "4.5.3"}
+rbatis = { version = "4.5.10", features = ["debug_mode"]}
+rbdc-mysql={version="4.5.2"}
 
 serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
 log = "0.4"
-fast_log = {version = "1.6", features = ["mmap"]}
+fast_log = {version = "1.6.12", features = ["mmap"]}
 redis = { version = "0.24.0", features = ["tokio-comp"] }
 #实在是不知道这个redis怎么异步，只能用同步的了
 #redis = "0.24.0"
