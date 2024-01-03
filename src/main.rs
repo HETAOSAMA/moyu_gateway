@@ -22,8 +22,8 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .route("/", web::get().to(index))
             .configure(sys_service_config)
-            // .service(web::resource("/{service}/{path:.*}")
-                // .to(handle_request))
+            .service(web::resource("/{service}/{path:.*}")
+                .to(handle_request))
     })
         .bind(&CONTEXT.config.server_url)?
         .run()
