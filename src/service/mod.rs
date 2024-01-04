@@ -1,5 +1,5 @@
 pub mod redis_service;
-mod sys_services_service;
+pub mod sys_services_service;
 
 use once_cell::sync::Lazy;
 use rbatis::RBatis;

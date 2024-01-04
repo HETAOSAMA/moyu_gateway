@@ -6,7 +6,7 @@ use rbatis::snowflake::new_snowflake_id;
 use serde_json::from_str;
 use url::{Url};
 use crate::domain::table::sys_services::SysServices;
-use crate::domain::vo::reqvo::sys_service_reqvo::SelectServiceByPageReqVO;
+use crate::domain::vo::reqvo::sys_service_reqvo::{SelectServiceByPageReqVO, UpdateIsActive};
 use crate::pool;
 use crate::error::Result;
 use crate::service::redis_service::{del, get, set};
@@ -58,7 +58,9 @@ impl SysServiceService {
                 //查看redis中是否存在
                 let value = get(key.clone().unwrap().to_string()).await.await;
                 if value.unwrap().is_empty(){
-                    let _ = set(key.clone().unwrap().to_string(), json_string).await.await;
+                    if arg.is_active == Some(1) {
+                        let _ = set(key.clone().unwrap().to_string(), json_string).await.await;
+                    }
                     Ok(SysServices::insert(pool!(), &arg).await?.rows_affected)
                 }else { 
                     return Err(Error::from("已有同名服务名称和路径,请重新命名"));
@@ -108,7 +110,7 @@ impl SysServiceService {
         if !datas.is_empty(){
             for data in datas {
                 let redis_key = get_redis_key(data);
-                del(redis_key.unwrap()).await;
+                del(redis_key.unwrap()).await.await.unwrap();
             }
         }
         let a = SysServiceService::delete_by_ids(pool!(), arg).await?.rows_affected;
@@ -122,11 +124,37 @@ impl SysServiceService {
         let page = Page::<SysServices>::from(a);
         return Ok(page);
     }
+
+    pub async fn update_is_active(&self,arg: &UpdateIsActive) -> Result<u64> {
+        let current_datetime = DateTime::now();
+        let mut data = SysServices::select_by_id(pool!(), &arg.id.clone().unwrap()).await?.unwrap();
+        if arg.is_active !=Some(1) {
+            let redis_key = get_redis_key(data.clone());
+            del(redis_key.unwrap()).await.await.unwrap();
+            data.is_active = arg.is_active.clone();
+            data.updated_at = Some(current_datetime);
+            let flag = SysServices::update_by_column(pool!(), &data, "id").await?.rows_affected;
+            return Ok(flag);
+        }else {
+            let redis_key = get_redis_key(data.clone());
+            data.is_active = arg.is_active.clone();
+            data.updated_at = Some(current_datetime);
+            match set(redis_key.unwrap().to_string(), serde_json::to_string(&data).unwrap()).await.await{
+                Ok(_) => {
+                    let flag = SysServices::update_by_column(pool!(), &data, "id").await?.rows_affected;
+                    return Ok(flag);
+                }
+                Err(e) => {
+                    return Err(Error::from(e.to_string()));
+                }
+            }
+        }
+    }
 }
 
 
 //生成redis key
-fn get_redis_key(mut arg: SysServices) -> Option<String> {
+pub fn get_redis_key(mut arg: SysServices) -> Option<String> {
     let mut redis_key = String::new();
     if arg.server_name.is_some() {
         if arg.path.is_some() {

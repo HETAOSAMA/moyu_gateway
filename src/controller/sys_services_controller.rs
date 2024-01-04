@@ -1,6 +1,6 @@
 use actix_web::{post, Responder, web};
 use crate::domain::table::sys_services::SysServices;
-use crate::domain::vo::reqvo::sys_service_reqvo::{AddServiceReqVO, DeleteServiceReqVO, SelectServiceByPageReqVO, UpdateServiceReqVO};
+use crate::domain::vo::reqvo::sys_service_reqvo::{AddServiceReqVO, DeleteServiceReqVO, SelectServiceByPageReqVO, UpdateIsActive, UpdateServiceReqVO};
 use crate::domain::vo::respvo::RespVO;
 use crate::service::CONTEXT;
 
@@ -11,6 +11,7 @@ pub fn sys_service_config(cfg: &mut web::ServiceConfig) {
             .service(update_service)
             .service(delete_service_by_ids)
             .service(select_service_by_page)
+            .service(update_is_active)
     );
 }
 
@@ -42,11 +43,16 @@ async fn update_service(arg: web::Json<UpdateServiceReqVO>) -> impl Responder{
         protocol: arg.protocol.clone(),
         port: arg.port.clone(),
         path: arg.path.clone(),
-        is_active: arg.is_active.clone(),
+        is_active: None,
         created_at: None,
         updated_at: None,
     };
     let vo = CONTEXT.sys_service_service.update_service(sys_service).await;
+    return RespVO::from_result(&vo).resp_json()
+}
+#[post("/update_is_active")]
+async fn update_is_active(arg: web::Json<UpdateIsActive>) -> impl Responder{
+    let vo = CONTEXT.sys_service_service.update_is_active(&arg).await;
     return RespVO::from_result(&vo).resp_json()
 }
 

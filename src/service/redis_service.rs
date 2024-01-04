@@ -89,7 +89,7 @@ pub async fn get(key: String) -> BoxFuture<'static,Result<String>> {
     })
 }
 
-pub async fn del(key: String) -> BoxFuture<'static,Result<String>> {
+pub async fn del(key: String) -> BoxFuture<'static,Result<usize>> {
     Box::pin(async move {
         let mut connection = get_rd!();
         let result = connection.del(key);

@@ -30,7 +30,6 @@ pub struct UpdateServiceReqVO {
     pub protocol: Option<String>,
     pub port: Option<i32>,
     pub path: Option<String>,
-    pub is_active: Option<i32>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -45,4 +44,12 @@ pub struct SelectServiceByPageReqVO {
     pub is_active: Option<i32>,
     pub page_no: Option<u64>,
     pub page_size: Option<u64>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct UpdateIsActive {
+    // 必填
+    pub id: Option<String>,
+    // 必填服务是否激活，1-启用，2-禁用
+    pub is_active: Option<i32>,
 }
