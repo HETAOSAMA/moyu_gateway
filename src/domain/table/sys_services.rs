@@ -14,7 +14,7 @@ pub struct SysServices {
     pub url: Option<String>,
     pub description: Option<String>,
     pub protocol: Option<String>,
-    pub port: Option<i32>,
+    pub port: Option<u16>,
     pub path: Option<String>,
     pub is_active: Option<i32>,
     pub created_at: Option<DateTime>,
@@ -35,10 +35,7 @@ pub async fn sync_tables_data(rb: &RBatis) {
         if key.clone().unwrap().is_empty() {
             continue;
         }
-        let value = get(key.clone().unwrap().to_string()).await.await;
-        if value.unwrap().is_empty(){
-            let _ = set(key.clone().unwrap().to_string(), serde_json::to_string(&sys_service).unwrap()).await.await;
-        }
+        let _ = set(key.clone().unwrap().to_string(), serde_json::to_string(&sys_service).unwrap()).await.await;
     }
 }
 

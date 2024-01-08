@@ -11,7 +11,7 @@ pub struct AddServiceReqVO {
     // 服务的协议，例如 HTTP、HTTPS。
     pub protocol: Option<String>,
     // 服务的端口号可选
-    pub port: Option<i32>,
+    pub port: Option<u16>,
     // 服务的路径，用于指定服务的特定子路径。可选<i32>,
     pub path: Option<String>,
     // 服务是否激活，默认为1 （1-启用，2-禁用）
@@ -28,7 +28,7 @@ pub struct UpdateServiceReqVO {
     pub url: Option<String>,
     pub description: Option<String>,
     pub protocol: Option<String>,
-    pub port: Option<i32>,
+    pub port: Option<u16>,
     pub path: Option<String>,
 }
 
