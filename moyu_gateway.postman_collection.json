@@ -1,0 +1,186 @@
+{
+	"info": {
+		"_postman_id": "34eee0e1-ce02-45df-aaac-231d4fb793ee",
+		"name": "moyu_gateway",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13208188"
+	},
+	"item": [
+		{
+			"name": "add_serrvice",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"server_name\":\"fuwu2\",\n    \"url\":\"www.baidu.com\",\n    \"description\":\"\",\n    \"protocol\":\"HTTPS\",\n    \"port\":80,\n    \"path\":\"/test/*\",\n    \"is_active\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:6666/sys_service/add_service",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "6666",
+					"path": [
+						"sys_service",
+						"add_service"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update_saervice",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\":\"583929380946841604\",\n    \"server_name\":\"fuwu1\",\n    \"path\":\"/test/001\",\n    \"port\":81\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:6666/sys_service/update_service",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "6666",
+					"path": [
+						"sys_service",
+						"update_service"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete_service_by_ids",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"ids\":[\"582761072360951809\",\"582761085442985987\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:6666/sys_service/delete_service_by_ids",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "6666",
+					"path": [
+						"sys_service",
+						"delete_service_by_ids"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "select_service_by_page",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"server_name\":\"\",\n    \"is_active\":1,\n    \"page_no\":1,\n    \"page_size\":10\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:6666/sys_service/select_service_by_page",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "6666",
+					"path": [
+						"sys_service",
+						"select_service_by_page"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "127.0.0.1:6666/test",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:6666/test",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "6666",
+					"path": [
+						"test"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "127.0.0.1:6666/sys_service/update_is_active",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\":\"583929396599984134\",\n    \"is_active\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:6666/sys_service/update_is_active",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "6666",
+					"path": [
+						"sys_service",
+						"update_is_active"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
